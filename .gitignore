@@ -1,0 +1,6 @@
+__pycache__/
+.antlr/
+att1-env/
+*.interp
+*.tokens
+Arithmetic[a-zA-Z]*.py
