@@ -7,7 +7,6 @@ factor: INT | LPAREN expr RPAREN | VAR ;
 program: statement+ ;
 statement: assignment | expr | commandCond | loopWhile | loopFor ;
 assignment: VAR ASSIGN expr ;
-// Extras
 commandCond: SE cond LBRACK program RBRACK (SENAO LBRACK program RBRACK)? ;
 cond: expr (COMPARISON | DIFFERENT | BEQUAL | LEQUAL | SMALLER | BIGGER) expr ;
 loopWhile: ENQUANTO cond LBRACK program RBRACK (SENAO LBRACK program RBRACK)? ;
@@ -25,9 +24,7 @@ LBRACK: '{' ;
 RBRACK: '}' ;
 WS: [ \t\r\n]+ -> skip ;
 ASSIGN: '=' ;
-// Bônus
 SE: 'se' ;
-ENTAO: 'entao' ;
 SENAO: 'senao' ;
 ENQUANTO: 'enquanto';
 PARA: 'para';
