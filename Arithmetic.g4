@@ -8,9 +8,9 @@ program: statement+ ;
 statement: assignment | expr | commandCond | loopWhile | loopFor ;
 assignment: VAR ASSIGN expr ;
 // Extras
-commandCond: SE cond LBRACK program RBRACK (SENAO program RBRACK)? ;
+commandCond: SE cond LBRACK program RBRACK (SENAO LBRACK program RBRACK)? ;
 cond: expr (COMPARISON | DIFFERENT | BEQUAL | LEQUAL | SMALLER | BIGGER) expr ;
-loopWhile: ENQUANTO cond LBRACK program RBRACK (SENAO program RBRACK)? ;
+loopWhile: ENQUANTO cond LBRACK program RBRACK (SENAO LBRACK program RBRACK)? ;
 loopFor: PARA VAR DE expr ATE expr LBRACK program RBRACK ;
 
 // Regras do Lexer
