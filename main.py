@@ -27,9 +27,18 @@ class ArithmeticVisitor(ParseTreeVisitor):
         if ctx.INT():
             return int(ctx.INT().getText())
         elif ctx.VAR():
-            return float(self.data_variables[ctx.VAR().getText()])
+            var_name = ctx.VAR().getText()
+            if var_name in self.data_variables:
+                var_value = self.data_variables[var_name]
+                if isinstance(var_value, int):
+                    return var_value
+                elif isinstance(var_value, float):
+                    return int(var_value) if var_value.is_integer() else var_value
+            else:
+                raise NameError(f"Variable '{var_name}' is not defined")
         else:
             return self.visitExpr(ctx.expr())
+
     
     def visitAssignment(self, ctx):
         name = ctx.VAR().getText()
@@ -46,11 +55,12 @@ class ArithmeticVisitor(ParseTreeVisitor):
         elif ctx.loopFor():
             self.visitLoopFor(ctx.loopFor())
         else:
-            return self.visitExpr(ctx.expr())
-        print(self.data_variables)
+            value = self.visitExpr(ctx.expr())
+            print(value)
     
     def visitProgram(self, ctx):
-        return self.visitStatement(ctx.statement()[0])
+        for statement in ctx.statement():
+            self.visitStatement(statement)
     
     def visitCond(self, ctx):
         exp1 = self.visitExpr(ctx.expr()[0])
@@ -66,9 +76,10 @@ class ArithmeticVisitor(ParseTreeVisitor):
     
     def visitLoopWhile(self, ctx):
         if self.visitCond(ctx.cond()):
+            print("entrou")
             self.visitProgram(ctx.program()[0])
             self.visitLoopWhile(ctx)
-        elif (ctx.getChild(4)):
+        elif (ctx.SENAO()):
             self.visitProgram(ctx.program()[1])
 
     def visitLoopFor(self, ctx, recursion=False):
@@ -77,18 +88,22 @@ class ArithmeticVisitor(ParseTreeVisitor):
         if name_variable not in self.data_variables:
             self.data_variables[name_variable] = self.visitExpr(ctx.expr()[0])
         elif name_variable in self.data_variables and not recursion:
-            print(f"Erro de compilação! A variável {name_variable} já existe!")
-            exit()
+            raise NameError(f"Variable '{name_variable}' already exists")
+            
         
-        if self.data_variables[name_variable] < int(self.visitExpr(ctx.expr()[1])):
-            self.visitProgram(ctx.program()[0])
+        end_value = int(self.visitExpr(ctx.expr()[1]))
+        current_value = self.data_variables[name_variable]
+
+        if current_value < end_value:
+            self.visitProgram(ctx.program())
             self.data_variables[name_variable] += 1
             self.visitLoopFor(ctx, True)
-        elif self.data_variables[name_variable] > int(self.visitExpr(ctx.expr()[1])):
-            self.visitProgram(ctx.program()[0])
+        elif current_value > end_value:
+            self.visitProgram(ctx.program())
             self.data_variables[name_variable] -= 1
             self.visitLoopFor(ctx, True)
-
+        else:
+            del self.data_variables[name_variable]
 
     
 def main():
@@ -104,12 +119,7 @@ def main():
         stream = CommonTokenStream(lexer)
         parser = ArithmeticParser(stream)
         tree = parser.program()
-
-        if '=' not in input_str:
-            result = visitor.visitProgram(tree)
-            print("Resultado:", result)
-        else:
-            visitor.visitProgram(tree)
+        visitor.visitProgram(tree)
 
 if __name__ == '__main__':
     main()

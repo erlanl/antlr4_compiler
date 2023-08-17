@@ -4,18 +4,14 @@ grammar Arithmetic;
 expr: term ( (PLUS | MINUS) term )* ;
 term: factor ( (MUL | DIV) factor )* ;
 factor: INT | LPAREN expr RPAREN | VAR ;
-
-// Novas Regras do Parser
 program: statement+ ;
-statement: assignment | expr | commandCond | loopWhile | loopFor;
+statement: assignment | expr | commandCond | loopWhile | loopFor ;
 assignment: VAR ASSIGN expr ;
-
-// Bônus:
-commandCond: SE cond ENTAO program (SENAO program)? ;
+// Extras
+commandCond: SE cond LBRACK program RBRACK (SENAO program RBRACK)? ;
 cond: expr (COMPARISON | DIFFERENT | BEQUAL | LEQUAL | SMALLER | BIGGER) expr ;
-loopWhile: ENQUANTO cond ENTAO program (SENAO program)? ;
-loopFor: PARA VAR DE expr ATE expr ENTAO program (SENAO program)? ;
-function: FUNC VAR ENTAO program ;
+loopWhile: ENQUANTO cond LBRACK program RBRACK (SENAO program RBRACK)? ;
+loopFor: PARA VAR DE expr ATE expr LBRACK program RBRACK ;
 
 // Regras do Lexer
 PLUS: '+' ;
@@ -28,10 +24,7 @@ RPAREN: ')' ;
 LBRACK: '{' ;
 RBRACK: '}' ;
 WS: [ \t\r\n]+ -> skip ;
-
-// Novas Regras do Lexer
 ASSIGN: '=' ;
-
 // Bônus
 SE: 'se' ;
 ENTAO: 'entao' ;
@@ -40,7 +33,6 @@ ENQUANTO: 'enquanto';
 PARA: 'para';
 ATE: 'ate';
 DE: 'de';
-FUNC: 'funcao';
 COMPARISON: '==' ;
 DIFFERENT: '!=' ;
 BEQUAL: '>=' ;
